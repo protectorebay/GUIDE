@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <title>Overlay Clean</title>
 
+<!-- FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+
 <style>
 html, body {
     margin:0;
@@ -19,14 +22,14 @@ html, body {
     position:absolute;
     top:40px;
     left:40px;
-    width:1500px; /* bezpečná šírka */
+    width:1400px;
     color:white;
 }
 
 /* ICON */
 .icon {
     font-family: Arial, sans-serif;
-    font-size:20px;
+    font-size:18px;
     opacity:0;
     transform: translateY(-10px);
     transition: all 0.4s ease;
@@ -37,16 +40,17 @@ html, body {
     width:0;
     height:2px;
     background:white;
-    margin:10px 0 14px 0;
+    margin:8px 0 12px 0;
     transition: width 0.6s ease;
 }
 
 /* TEXT */
 .text {
-    font-family: "Copperplate Gothic Bold", "Copperplate", serif;
+    font-family: 'Cinzel', serif;
+    font-weight:700;
     font-size:22px;
-    line-height:1.4;
-    letter-spacing:1px;
+    line-height:1.35;
+    letter-spacing:1.2px;
     text-transform: uppercase;
 
     opacity:0;
@@ -61,7 +65,7 @@ html, body {
 }
 
 .show-line {
-    width:100%;
+    width:85%; /* nie full width – bližšie k obrázku */
 }
 
 .show-text {
