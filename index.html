@@ -2,192 +2,174 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Pro Overlay Guide</title>
+<title>Clean Info Overlay</title>
 
 <style>
 html, body {
     margin:0;
     padding:0;
-    background: transparent;
     width:1920px;
     height:1080px;
+    background: transparent;
     overflow:hidden;
-    font-family: Arial, sans-serif;
 }
 
-.overlay {
+/* CONTAINER */
+.wrapper {
     position:absolute;
-    opacity:0;
-    transition: opacity 0.8s ease;
-}
-
-.visible {
-    opacity:1;
-}
-
-.text {
-    background: rgba(0,0,0,0.75);
-    padding:12px 16px;
-    border-radius:8px;
-    font-size:18px;
+    top:60px;
+    left:80px;
+    width:1760px;
     color:white;
-    max-width:320px;
-    line-height:1.4;
 }
 
-.highlight {
-    position:absolute;
-    border:2px solid rgba(255,255,255,0.8);
-    box-shadow: 0 0 15px rgba(255,255,255,0.6);
-    border-radius:6px;
-    animation: pulse 1.5s infinite;
+/* ICON */
+.icon {
+    font-size:40px;
+    opacity:0;
+    transform: translateY(-20px);
+    transition: all 0.5s ease;
 }
 
-@keyframes pulse {
-    0% { box-shadow: 0 0 10px rgba(255,255,255,0.4);}
-    50% { box-shadow: 0 0 25px rgba(255,255,255,0.9);}
-    100% { box-shadow: 0 0 10px rgba(255,255,255,0.4);}
+/* LINE */
+.line {
+    width:0;
+    height:2px;
+    background:white;
+    margin:15px 0 20px 0;
+    transition: width 0.8s ease;
 }
 
-svg path {
-    stroke: white;
-    stroke-width: 2;
-    fill: none;
-    stroke-dasharray: 400;
-    stroke-dashoffset: 400;
-    animation: draw 1.5s forwards;
+/* TEXT */
+.text {
+    font-family: "Times New Roman", serif;
+    font-size:48px;
+    line-height:1.25;
+    letter-spacing:1px;
+    text-transform: uppercase;
+
+    opacity:0;
+    transform: translateY(-30px);
+    transition: all 0.8s ease;
 }
 
-@keyframes draw {
-    to { stroke-dashoffset: 0; }
+/* STATES */
+.show-icon {
+    opacity:1;
+    transform: translateY(0);
 }
+
+.show-line {
+    width:100%;
+}
+
+.show-text {
+    opacity:1;
+    transform: translateY(0);
+}
+
+.hide {
+    opacity:0 !important;
+    transform: translateY(-30px) !important;
+}
+
 </style>
 </head>
 
 <body>
 
-<div id="container"></div>
+<div class="wrapper">
+    <div id="icon" class="icon">i</div>
+    <div id="line" class="line"></div>
+    <div id="text" class="text"></div>
+</div>
 
 <script>
 
 const sections = [
 
-{
-id:"rsi",
-text:"RSI measures momentum. Low values indicate oversold conditions where price may bounce, while high values suggest overbought conditions and potential pullback.",
-box:{top:60,left:1600,width:200,height:80},
-textPos:{top:20,left:1350},
-line:"M1500,120 L1600,100"
-},
+"RSI SHOWS MARKET MOMENTUM. LOW VALUES SIGNAL OVERSOLD CONDITIONS WHERE PRICE MAY REACT UP, WHILE HIGH VALUES INDICATE OVERBOUGHT LEVELS AND POSSIBLE PULLBACK.",
 
-{
-id:"orderbook",
-text:"Order Book shows real-time buy and sell liquidity. Large walls often act as short-term support or resistance where price reacts.",
-box:{top:150,left:500,width:200,height:600},
-textPos:{top:150,left:250},
-line:"M350,300 L500,300"
-},
+"ORDER BOOK DISPLAYS REAL-TIME BUY AND SELL LIQUIDITY. LARGE ORDERS OFTEN ACT AS SHORT-TERM SUPPORT OR RESISTANCE LEVELS.",
 
-{
-id:"heatmap",
-text:"Liquidity heatmap highlights where large orders are placed. Bright zones often attract price as liquidity acts like a magnet.",
-box:{top:100,left:0,width:300,height:800},
-textPos:{top:50,left:320},
-line:"M350,200 L250,200"
-},
+"LIQUIDITY HEATMAP HIGHLIGHTS AREAS WITH HIGH ORDER CONCENTRATION. PRICE IS OFTEN DRAWN TOWARD THESE ZONES LIKE A MAGNET.",
 
-{
-id:"micro",
-text:"Microstructure shows short-term flow and behavior. It helps identify whether the market is trending, ranging, or lacking volume.",
-box:{top:300,left:1500,width:350,height:300},
-textPos:{top:500,left:1200},
-line:"M1350,550 L1500,450"
-},
+"MICROSTRUCTURE SHOWS SHORT-TERM MARKET BEHAVIOR. IT HELPS IDENTIFY WHETHER PRICE IS TRENDING, RANGING, OR LOSING MOMENTUM.",
 
-{
-id:"fear",
-text:"Fear and Greed index reflects market sentiment. Extreme fear can signal potential bottoms, while extreme greed often precedes corrections.",
-box:{top:750,left:750,width:200,height:200},
-textPos:{top:900,left:500},
-line:"M650,950 L750,850"
-},
+"FEAR AND GREED INDEX REFLECTS MARKET SENTIMENT. EXTREME FEAR MAY SIGNAL OPPORTUNITY, WHILE EXTREME GREED OFTEN PRECEDES CORRECTIONS.",
 
-{
-id:"trend",
-text:"Trend indicator defines the current direction of the market. Trading with the trend increases probability compared to trading against it.",
-box:{top:900,left:900,width:300,height:100},
-textPos:{top:800,left:1200},
-line:"M1200,820 L1050,920"
-},
+"TREND INDICATOR DEFINES MARKET DIRECTION. TRADING WITH THE TREND GENERALLY PROVIDES HIGHER PROBABILITY SETUPS.",
 
-{
-id:"volume",
-text:"Volume shows market participation behind moves. Strong moves with high volume are more reliable than weak low-volume movements.",
-box:{top:0,left:700,width:500,height:150},
-textPos:{top:200,left:900},
-line:"M1000,200 L900,100"
-}
+"VOLUME REPRESENTS MARKET PARTICIPATION. STRONG MOVES WITH HIGH VOLUME ARE MORE RELIABLE THAN LOW-VOLUME MOVEMENTS."
 
 ];
 
-const container = document.getElementById("container");
+const icon = document.getElementById("icon");
+const line = document.getElementById("line");
+const text = document.getElementById("text");
 
-function renderSection(sec){
+let index = 0;
 
-    container.innerHTML = "";
+async function showSection(content){
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "overlay visible";
+    text.innerText = content;
 
-    const text = document.createElement("div");
-    text.className = "text";
-    text.innerText = sec.text;
-    text.style.position="absolute";
-    text.style.top = sec.textPos.top+"px";
-    text.style.left = sec.textPos.left+"px";
+    // reset
+    icon.classList.remove("show-icon");
+    line.classList.remove("show-line");
+    text.classList.remove("show-text");
 
-    const box = document.createElement("div");
-    box.className = "highlight";
-    box.style.top = sec.box.top+"px";
-    box.style.left = sec.box.left+"px";
-    box.style.width = sec.box.width+"px";
-    box.style.height = sec.box.height+"px";
+    await delay(300);
 
-    const svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
-    svg.setAttribute("width","1920");
-    svg.setAttribute("height","1080");
-    svg.style.position="absolute";
+    // 1. icon
+    icon.classList.add("show-icon");
 
-    const path = document.createElementNS("http://www.w3.org/2000/svg","path");
-    path.setAttribute("d", sec.line);
+    await delay(600);
 
-    svg.appendChild(path);
+    // 2. line
+    line.classList.add("show-line");
 
-    wrapper.appendChild(svg);
-    wrapper.appendChild(box);
-    wrapper.appendChild(text);
+    await delay(600);
 
-    container.appendChild(wrapper);
+    // 3. text
+    text.classList.add("show-text");
 
-    setTimeout(()=>wrapper.classList.remove("visible"),10000);
+    await delay(9000);
+
+    // HIDE (reverse)
+    text.classList.add("hide");
+    await delay(400);
+
+    line.style.width = "0";
+    await delay(300);
+
+    icon.classList.add("hide");
+
+    await delay(800);
+
+    // reset hide states
+    icon.classList.remove("hide");
+    text.classList.remove("hide");
 }
 
-// MAIN LOOP
+function delay(ms){
+    return new Promise(r => setTimeout(r, ms));
+}
+
 async function runCycle(){
 
-    for (let i = 0; i < sections.length; i++) {
-        renderSection(sections[i]);
-        await new Promise(r => setTimeout(r, 15000));
+    for(let i=0;i<sections.length;i++){
+        await showSection(sections[i]);
     }
 
-    // 10 minute pause
-    await new Promise(r => setTimeout(r, 600000));
+    // 10 min pause
+    await delay(600000);
 
     runCycle();
 }
 
-// start after short delay
-setTimeout(runCycle, 3000);
+// start
+setTimeout(runCycle, 2000);
 
 </script>
 
