@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Overlay Guide</title>
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        overflow: hidden;
+        width: 1920px;
+        height: 1080px;
+        font-family: Arial, sans-serif;
+    }
+
+    .overlay {
+        position: absolute;
+        opacity: 0;
+        transition: opacity 0.8s ease;
+        color: white;
+    }
+
+    .visible {
+        opacity: 1;
+    }
+
+    .text {
+        background: rgba(0,0,0,0.7);
+        padding: 10px 14px;
+        border-radius: 6px;
+        font-size: 18px;
+        max-width: 300px;
+    }
+
+    .arrow {
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 20px solid white;
+        margin: 5px auto;
+    }
+
+    /* POSITIONING (adjust later if needed) */
+
+    #rsi {
+        top: 80px;
+        right: 120px;
+        text-align: center;
+    }
+
+    #orderbook {
+        top: 200px;
+        left: 350px;
+        text-align: center;
+    }
+
+    #fear {
+        bottom: 150px;
+        left: 700px;
+        text-align: center;
+    }
+
+</style>
+</head>
+<body>
+
+<!-- RSI -->
+<div id="rsi" class="overlay">
+    <div class="text">Low RSI = oversold, High RSI = overbought.</div>
+    <div class="arrow"></div>
+</div>
+
+<!-- ORDER BOOK -->
+<div id="orderbook" class="overlay">
+    <div class="text">Order Book shows buy and sell pressure in real time.</div>
+    <div class="arrow"></div>
+</div>
+
+<!-- FEAR & GREED -->
+<div id="fear" class="overlay">
+    <div class="text">Low = fear (possible bottom), High = greed (possible top).</div>
+    <div class="arrow"></div>
+</div>
+
+<script>
+const sections = ["rsi", "orderbook", "fear"];
+let current = 0;
+
+function showSection(index) {
+    const el = document.getElementById(sections[index]);
+    el.classList.add("visible");
+
+    setTimeout(() => {
+        el.classList.remove("visible");
+    }, 10000); // visible 10 sec
+}
+
+function cycle() {
+    showSection(current);
+    current = (current + 1) % sections.length;
+}
+
+// initial delay
+setTimeout(() => {
+    cycle();
+    setInterval(cycle, 15000); // next every 15 sec
+}, 3000);
+
+// reload whole overlay every 5 min
+setInterval(() => {
+    location.reload();
+}, 300000);
+
+</script>
+
+</body>
+</html>
