@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Clean Info Overlay</title>
+<title>Overlay Clean</title>
 
 <style>
 html, body {
@@ -14,21 +14,22 @@ html, body {
     overflow:hidden;
 }
 
-/* CONTAINER */
+/* MAIN BLOCK */
 .wrapper {
     position:absolute;
-    top:60px;
-    left:80px;
-    width:1760px;
+    top:40px;
+    left:40px;
+    width:1500px; /* bezpečná šírka */
     color:white;
 }
 
 /* ICON */
 .icon {
-    font-size:40px;
+    font-family: Arial, sans-serif;
+    font-size:20px;
     opacity:0;
-    transform: translateY(-20px);
-    transition: all 0.5s ease;
+    transform: translateY(-10px);
+    transition: all 0.4s ease;
 }
 
 /* LINE */
@@ -36,21 +37,21 @@ html, body {
     width:0;
     height:2px;
     background:white;
-    margin:15px 0 20px 0;
-    transition: width 0.8s ease;
+    margin:10px 0 14px 0;
+    transition: width 0.6s ease;
 }
 
 /* TEXT */
 .text {
-    font-family: "Times New Roman", serif;
-    font-size:48px;
-    line-height:1.25;
+    font-family: "Copperplate Gothic Bold", "Copperplate", serif;
+    font-size:22px;
+    line-height:1.4;
     letter-spacing:1px;
     text-transform: uppercase;
 
     opacity:0;
-    transform: translateY(-30px);
-    transition: all 0.8s ease;
+    transform: translateY(-15px);
+    transition: all 0.6s ease;
 }
 
 /* STATES */
@@ -70,9 +71,8 @@ html, body {
 
 .hide {
     opacity:0 !important;
-    transform: translateY(-30px) !important;
+    transform: translateY(-15px) !important;
 }
-
 </style>
 </head>
 
@@ -88,19 +88,21 @@ html, body {
 
 const sections = [
 
-"RSI SHOWS MARKET MOMENTUM. LOW VALUES SIGNAL OVERSOLD CONDITIONS WHERE PRICE MAY REACT UP, WHILE HIGH VALUES INDICATE OVERBOUGHT LEVELS AND POSSIBLE PULLBACK.",
+"TRADES PAST MINUTE SHOWS MARKET PARTICIPATION BEHIND MOVES. STRONG MOVES WITH HIGH VOLUME ARE MORE RELIABLE THAN WEAK LOW-VOLUME MOVEMENTS.",
 
-"ORDER BOOK DISPLAYS REAL-TIME BUY AND SELL LIQUIDITY. LARGE ORDERS OFTEN ACT AS SHORT-TERM SUPPORT OR RESISTANCE LEVELS.",
+"RSI SHOWS MARKET MOMENTUM. LOW VALUES SIGNAL OVERSOLD CONDITIONS, HIGH VALUES INDICATE OVERBOUGHT LEVELS AND POSSIBLE PULLBACK.",
 
-"LIQUIDITY HEATMAP HIGHLIGHTS AREAS WITH HIGH ORDER CONCENTRATION. PRICE IS OFTEN DRAWN TOWARD THESE ZONES LIKE A MAGNET.",
+"ORDER BOOK DISPLAYS REAL-TIME BUY AND SELL LIQUIDITY. LARGE ORDERS OFTEN ACT AS SHORT-TERM SUPPORT OR RESISTANCE.",
 
-"MICROSTRUCTURE SHOWS SHORT-TERM MARKET BEHAVIOR. IT HELPS IDENTIFY WHETHER PRICE IS TRENDING, RANGING, OR LOSING MOMENTUM.",
+"LIQUIDITY HEATMAP HIGHLIGHTS AREAS WITH HIGH ORDER CONCENTRATION. PRICE IS OFTEN ATTRACTED TO THESE LEVELS.",
 
-"FEAR AND GREED INDEX REFLECTS MARKET SENTIMENT. EXTREME FEAR MAY SIGNAL OPPORTUNITY, WHILE EXTREME GREED OFTEN PRECEDES CORRECTIONS.",
+"MICROSTRUCTURE SHOWS SHORT-TERM MARKET FLOW. IT HELPS IDENTIFY WHETHER PRICE IS TRENDING OR RANGING.",
 
-"TREND INDICATOR DEFINES MARKET DIRECTION. TRADING WITH THE TREND GENERALLY PROVIDES HIGHER PROBABILITY SETUPS.",
+"FEAR AND GREED INDEX REFLECTS MARKET SENTIMENT. EXTREME VALUES OFTEN SIGNAL REVERSAL ZONES.",
 
-"VOLUME REPRESENTS MARKET PARTICIPATION. STRONG MOVES WITH HIGH VOLUME ARE MORE RELIABLE THAN LOW-VOLUME MOVEMENTS."
+"TREND INDICATOR DEFINES MARKET DIRECTION. TRADING WITH TREND INCREASES PROBABILITY.",
+
+"VOLUME REPRESENTS MARKET PARTICIPATION. HIGH VOLUME CONFIRMS STRONGER AND MORE RELIABLE MOVES."
 
 ];
 
@@ -108,7 +110,9 @@ const icon = document.getElementById("icon");
 const line = document.getElementById("line");
 const text = document.getElementById("text");
 
-let index = 0;
+function delay(ms){
+    return new Promise(r => setTimeout(r, ms));
+}
 
 async function showSection(content){
 
@@ -119,56 +123,47 @@ async function showSection(content){
     line.classList.remove("show-line");
     text.classList.remove("show-text");
 
-    await delay(300);
+    await delay(200);
 
-    // 1. icon
+    // icon
     icon.classList.add("show-icon");
+    await delay(400);
 
-    await delay(600);
-
-    // 2. line
+    // line
     line.classList.add("show-line");
+    await delay(500);
 
-    await delay(600);
-
-    // 3. text
+    // text
     text.classList.add("show-text");
-
     await delay(9000);
 
-    // HIDE (reverse)
+    // hide reverse
     text.classList.add("hide");
-    await delay(400);
+    await delay(300);
 
     line.style.width = "0";
     await delay(300);
 
     icon.classList.add("hide");
+    await delay(600);
 
-    await delay(800);
-
-    // reset hide states
+    // cleanup
     icon.classList.remove("hide");
     text.classList.remove("hide");
 }
 
-function delay(ms){
-    return new Promise(r => setTimeout(r, ms));
-}
-
 async function runCycle(){
 
-    for(let i=0;i<sections.length;i++){
+    for (let i = 0; i < sections.length; i++) {
         await showSection(sections[i]);
     }
 
-    // 10 min pause
+    // 10 min pauza
     await delay(600000);
 
     runCycle();
 }
 
-// start
 setTimeout(runCycle, 2000);
 
 </script>
